@@ -1,0 +1,165 @@
+body {
+    font-family: 'Arvo';
+    font-size: 16px;
+    padding: 20px 100px 0px 100px;
+    background: #f3f3f3;
+}
+
+/* List */
+
+ul {
+    list-style: none;
+}
+
+.block {
+  width:500px;
+  height:100px;
+  border:1px solid #000;
+  margin-right: 12.5px;
+  margin-left: 12.5px;
+}
+
+.green {
+  background-color: green;
+}
+
+.light-green {
+  background-color: lightgreen;
+}
+
+.red {
+  background-color: red;
+}
+
+.light-red {
+  background-color: pink;
+}
+
+.yellow {
+  background-color: yellow;
+}
+
+.light-yellow {
+  background-color: lightyellow;
+}
+
+.blue {
+  background-color: blue;
+}
+
+.light-blue {
+  background-color: lightblue;
+}
+
+li {
+    background: #fff;
+    width: 500px;
+    min-height: 30px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.delete {
+    display: none;
+    margin-left: auto;
+}
+
+li:hover .delete {
+    display: block;
+}
+
+label {
+    width: 400px;
+}
+
+.completed {
+    text-decoration: line-through;
+}
+
+/* Form */
+
+input[type=checkbox] {
+    transform: scale(1.5);
+    margin-right: 10px;
+}
+
+input[type=text] {
+    font-size: 1em;
+}
+
+button {
+    font-family: 'Arvo';
+    font-size: 1em;
+}
+
+/* Controls */
+
+.controls {
+    margin-top: 20px;
+}
+
+.pull-left {
+  font-size: small;
+  font-family: monospace;
+  text-align: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px;
+  width: 600px;
+  margin-top: 5px;
+}
+
+footer {
+  background-color: #FFF;
+  color: white;
+  padding: 10px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  position: fixed;
+}
+
+h1 {
+  font-size: xx-large;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+h2 {
+  text-align: center;
+  font-size: large;
+  font-family: sans-serif;
+}
+
+.col-sm {
+
+}
+
+@media screen and (min-width: 350px) {
+  .block {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #000;
+  }
+}
+
+@media screen and (min-width: 700px) {
+  .block {
+    width: 200px;
+    height: 100px;
+    border: 1px solid #000;
+  }
+}
+
+@media screen and (min-width: 1300px) {
+  .block {
+    width: 500px;
+    height: 100px;
+    border: 1px solid #000;
+  }
+}
