@@ -5,7 +5,7 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="./styles.css" />
   <title>Simon</title>
 </head>
 
@@ -15,7 +15,7 @@
 
   <div id="simon">
     <h1><i>(Mockup)</i> Play Simon</h1>
-    <h2>Press the buttons in the same order they flash in.</h2>
+    <h2>Press the buttons to match the sequence of flashes.</h2>
     <h2 v-show="gameHasStarted"><b>Current Score: {{score}}</b></h2>
 
     <h2><button v-on:click="beginGame()" v-show="!gameHasStarted">Begin</button></h2>
@@ -23,16 +23,16 @@
 
     <div class="container">
       <div class="row">
-        <button v-bind:class="getGreenClass" v-on:click="flashGreen()">
+        <button v-bind:class="getGreenClass" v-on:click="selectGreen()">
         </button>
-        <button v-bind:class="getRedClass" v-on:click="flashRed()">
+        <button v-bind:class="getRedClass" v-on:click="selectRed()">
         </button>
       </div>
       <br>
       <div class="row">
-        <button v-bind:class="getYellowClass" v-on:click="flashYellow()">
+        <button v-bind:class="getYellowClass" v-on:click="selectYellow()">
         </button>
-        <button v-bind:class="getBlueClass" v-on:click="flashBlue()">
+        <button v-bind:class="getBlueClass" v-on:click="selectBlue()">
         </button>
 
       </div>
@@ -46,11 +46,11 @@
 <br>
   <src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-  <script src="/script.js"></script>
+  <script src="./script.js"></script>
 </body>
 
 <footer>
-  <p class="pull-left"><a href="https://github.com/northlandruins/cp3">https://github.com/northlandruins/cp3</p></a>
+  <p class="pull-left"><a href="https://github.com/northlandruins/cs260-cp3">https://github.com/northlandruins/cs260-cp3</p></a>
 </footer>
 
 </html>

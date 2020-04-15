@@ -10,6 +10,10 @@ var simon = new Vue({
     yellowFlash: false,
     blueFlash: false,
     currentColor: '',
+    CLUE_FLASH_LENGTH: 400,
+    QUICK_FLASH_LENGTH: 100,
+    selectIndex: 0,
+    lost: false,
   },
   computed: {
     currentScore() {
@@ -42,86 +46,131 @@ var simon = new Vue({
       else
         return 'col-sm block light-blue';
     },
-  /*  activeTodos() {
-      return this.todos.filter(item => {
-        return !item.completed;
-      });
-    },
-    filteredTodos() {
-      if (this.show === 'active')
-      return this.todos.filter(item => {
-        return !item.completed;
-      });
-      if (this.show === 'completed')
-      return this.todos.filter(item => {
-        return item.completed;
-      });
-      return this.todos;
-    },*/
   },
     methods: {
       beginGame() {
         this.startGame = true;
         this.score = 0;
-        this.onlyFlashGreen();
-        setTimeout(this.unflashGreen, 200);
-        setTimeout(this.onlyFlashRed, 100);
-        setTimeout(this.unflashRed, 300);
-        setTimeout(this.onlyFlashBlue, 200);
-        setTimeout(this.unflashBlue, 400);
-        setTimeout(this.onlyFlashYellow, 300);
-        setTimeout(this.unflashYellow, 500);
-        setTimeout(this.onlyFlashGreen, 400);
-        setTimeout(this.unflashGreen, 500);
-        setTimeout(this.onlyFlashRed, 400);
-        setTimeout(this.unflashRed, 500);
-        setTimeout(this.onlyFlashBlue, 400);
-        setTimeout(this.unflashBlue, 500);
-        setTimeout(this.onlyFlashYellow, 400);
-        setTimeout(this.unflashYellow, 500);
-        setTimout(this.nextSequence, 1000);
+        this.selectIndex = 0;
+        this.sequence = [];
+        // initiate flash sequence
+        this.resetFlashGreen();
+        setTimeout(this.resetFlashRed, 75);
+        setTimeout(this.resetFlashBlue, 175);
+        setTimeout(this.resetFlashYellow, 275);
+        setTimeout(this.resetFlashGreen, 375);
+        // start the next sequence
+        setTimeout(this.nextSequence, 700);
+      },
+      selectGreen()
+      {
+        this.resetFlashGreen();
+        if (this.sequence[this.selectIndex] === "green"){
+          // correct guess
+          this.selectIndex++;
+          if (this.selectIndex == this.sequence.length)
+          {
+            this.score++;
+            // previous sequence ended; new one must be generated
+            setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);          }
+        }
+        else {
+          lost = true;
+          console.log("wrong guess");
+        }
       },
       flashGreen() {
         this.greenFlash = true;
-        setTimeout(this.unflashGreen, 500);
-        this.score++;
+        setTimeout(this.unflashGreen, this.CLUE_FLASH_LENGTH);
       },
-      onlyFlashGreen() {
+      resetFlashGreen() {
         this.greenFlash = true;
+        setTimeout(this.unflashGreen, this.QUICK_FLASH_LENGTH);
       },
       unflashGreen() {
         this.greenFlash = false;
       },
-     flashRed() {
-        this.redFlash = true;
-        setTimeout(this.unflashRed, 500);
-        this.score++;
+      selectRed()
+      {
+        this.resetFlashRed();
+        if (this.sequence[this.selectIndex] === "red"){
+          // correct guess
+          this.selectIndex++;
+          if (this.selectIndex == this.sequence.length)
+          {
+            this.score++;
+            // previous sequence ended; new one must be generated
+            setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);          }
+        }
+        else {
+          lost = true;
+          console.log("wrong guess");
+        }
       },
-      onlyFlashRed() {
+      flashRed() {
+        this.redFlash = true;
+        setTimeout(this.unflashRed, this.CLUE_FLASH_LENGTH);
+      },
+      resetFlashRed() {
          this.redFlash = true;
+         setTimeout(this.unflashRed, this.QUICK_FLASH_LENGTH);
        },
       unflashRed() {
         this.redFlash = false;
       },
+      selectYellow()
+      {
+        this.resetFlashYellow();
+        if (this.sequence[this.selectIndex] === "yellow"){
+          // correct guess
+          this.selectIndex++;
+          if (this.selectIndex == this.sequence.length)
+          {
+            this.score++;
+            // previous sequence ended; new one must be generated
+            setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);          }
+        }
+        else {
+          lost = true;
+          console.log("wrong guess");
+        }
+      },
       flashYellow() {
         this.yellowFlash = true;
-        setTimeout(this.unflashYellow, 500);
-        this.score++;
+        setTimeout(this.unflashYellow, this.CLUE_FLASH_LENGTH);
       },
-      onlyFlashYellow() {
+      resetFlashYellow() {
         this.yellowFlash = true;
+        setTimeout(this.unflashYellow, this.QUICK_FLASH_LENGTH);
       },
       unflashYellow() {
         this.yellowFlash = false;
       },
+      selectBlue()
+      {
+        this.resetFlashBlue();
+        if (this.sequence[this.selectIndex] === "blue"){
+          // correct guess
+          this.selectIndex++;
+          if (this.selectIndex == this.sequence.length)
+          {
+            this.score++;
+            // previous sequence ended; new one must be generated
+            setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);
+          }
+        }
+        else {
+          lost = true;
+          console.log("wrong guess");
+        }
+      },
       flashBlue() {
         this.blueFlash = true;
-        setTimeout(this.unflashBlue, 500);
-        this.score++;
+        setTimeout(this.unflashBlue, this.CLUE_FLASH_LENGTH);
       },
-      onlyFlashBlue() {
+      resetFlashBlue() {
         this.blueFlash = true;
-
+        setTimeout(this.unflashBlue, this.QUICK_FLASH_LENGTH);
       },
       unflashBlue() {
         this.blueFlash = false;
@@ -130,6 +179,7 @@ var simon = new Vue({
         this.startGame = false;
       },
       nextSequence() {
+        this.selectIndex = 0;
         var newColor = Math.floor((Math.random() * 4) + 1);
         if (newColor === 1)
         this.sequence.push('green');
@@ -142,25 +192,32 @@ var simon = new Vue({
         else {
           this.sequence.push('blue');
         }
-        for (var i = 0; i < this.sequence.length; i++){
+        console.log(this.sequence);
+        this.nextInSequence(0);
+      },
+      // recursive function
+      nextInSequence(i)
+      {
+        if (i < this.sequence.length)
+        {
+          // flash color and trigger the next color
           if (this.sequence[i] === 'green'){
-            this.onlyFlashGreen();
-            setTimeout(this.unflashGreen, 300);
+            this.flashGreen();
           }
           else if (this.sequence[i] === 'red'){
-            this.onlyFlashRed();
-            setTimeout(this.unflashRed, 300);
+            this.flashRed();
           }
           else if (this.sequence[i] === 'yellow'){
-            this.onlyFlashYellow();
-            setTimeout(this.unflashYellow, 300);
+            this.flashYellow();
           }
           else {
-            this.onlyFlashBlue();
-            setTimeout(this.unflashBlue, 300);
+            this.flashBlue();
           }
+          // recursive call
+          setTimeout(this.nextInSequence, this.CLUE_FLASH_LENGTH * 2, i+1);
         }
-      },
+
+      }
       /*
     addItem() {
       this.todos.push({text: this.message, completed:false});
