@@ -1,3 +1,4 @@
+/* Body*/
 body {
   font-family: 'Arvo';
   font-size: 16px;
@@ -17,6 +18,7 @@ h2 {
   font-family: sans-serif;
 }
 
+/* Bootstrap */
 .container {
   align-content: center;
   width: 60%;
@@ -34,8 +36,14 @@ h2 {
   margin: none;
 }
 
+/* Button Squares */
 .square {
   margin: 5px;
+}
+
+button {
+  font-family: 'Arvo';
+  font-size: 1em;
 }
 
 .green {
@@ -70,38 +78,7 @@ h2 {
   background-color: lightblue;
 }
 
-.completed {
-  text-decoration: line-through;
-}
-
-button {
-  font-family: 'Arvo';
-  font-size: 1em;
-}
-
-.pull-left {
-  font-size: small;
-  font-family: monospace;
-  text-align: center;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 5px;
-  width: 600px;
-  margin-top: 5px;
-}
-
-footer {
-  background-color: #FFF;
-  color: white;
-  padding: 10px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 50px;
-  position: fixed;
-}
-
+/* Return to Landing Page Button */
 .return {
   position: fixed;
   list-style-type: none;
@@ -128,4 +105,26 @@ footer {
   background-color: #000000;
   color: white;
   text-decoration: none;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  background-color: #555;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  padding-top: 15px;
+  font-size: small;
+  font-family: monospace;
+}
+
+/* Media Queries */
+@media (max-width: 900px) {
+  .return {
+    width: 20%;
+    max-width: 200px;
+  }
 }
