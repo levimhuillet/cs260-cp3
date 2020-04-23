@@ -1,27 +1,39 @@
 var simon = new Vue({
   el: '#simon',
   data: {
-    score: 0,
-    sequence: [],
-    message: '',
-    startGame: false,
-    greenFlash: false,
-    redFlash: false,
-    yellowFlash: false,
-    blueFlash: false,
-    currentColor: '',
+    score: 0, // player's current score
+    highScore: 0, // palyer's highest score
+    hasHighScore: false, // indicates whether a high score has been recorded
+    sequence: [], // correct sequence of flashes
+    isAnnouncing: false, // indicates a message needs to be displayed
+    message: '', // message to display to the user
+    gameInProgress: false, // indicates whether game is running
+    isPlayerTurn: false, // marks whether it is the player's turn
+    greenFlash: false, // indicates whether the green button is flashing
+    redFlash: false, // indicates whether the red button is flashing
+    yellowFlash: false, // indicates whether the yellow button is flashing
+    blueFlash: false, // indicates whether the blue button is flashing
+    // the length of a longer flash, when a clue is being given or a button is being pressed
     CLUE_FLASH_LENGTH: 400,
+    // the length of a shorter flash, when the game is being reset
     QUICK_FLASH_LENGTH: 100,
-    selectIndex: 0,
-    lost: false,
+    selectIndex: 0, // the index of the current color to guess in the sequence
   },
   computed: {
-    currentScore() {
-      return this.score;
+    /* Getters */
+    hasHighScore() {
+      return this.hasHighScore;
     },
-    gameHasStarted() {
-      return this.startGame;
+    gameInProgress() {
+      return this.gameInProgress;
     },
+    isAnnouncing() {
+      return this.isAnnouncing;
+    },
+    isPlayerTurn() {
+      return this.isPlayerTurn;
+    },
+    /* Responsible for displaying the flashing buttons */
     getGreenClass() {
       if (!this.greenFlash)
         return 'col-sm block green';
@@ -47,209 +59,197 @@ var simon = new Vue({
         return 'col-sm block light-blue';
     },
   },
-    methods: {
-      beginGame() {
-        this.startGame = true;
-        this.score = 0;
-        this.selectIndex = 0;
-        this.sequence = [];
-        // initiate flash sequence
-        this.resetFlashGreen();
-        setTimeout(this.resetFlashRed, 75);
-        setTimeout(this.resetFlashBlue, 175);
-        setTimeout(this.resetFlashYellow, 275);
-        setTimeout(this.resetFlashGreen, 375);
-        // start the next sequence
-        setTimeout(this.nextSequence, 700);
-      },
-      selectGreen()
-      {
-        this.resetFlashGreen();
-        if (this.sequence[this.selectIndex] === "green"){
+  methods: {
+    /* Game Management */
+    // Starts a new game
+    beginGame() {
+      // initialize
+      this.score = 0;
+      this.selectIndex = 0;
+      this.sequence = [];
+      this.isAnnouncing = false;
+      this.message = "";
+      // initiate restart flash sequence
+      this.resetFlashGreen();
+      setTimeout(this.resetFlashRed, 75);
+      setTimeout(this.resetFlashBlue, 175);
+      setTimeout(this.resetFlashYellow, 275);
+      setTimeout(this.resetFlashGreen, 375);
+      // start
+      this.gameInProgress = true;
+      // generate the next sequence
+      setTimeout(this.nextSequence, 700);
+    },
+    // ends current game and displays Game over,
+    // saving the score if it is a new high score
+    loseGame() {
+      this.gameInProgress = false;
+      this.isAnnouncing = true;
+      this.message = "Game Over";
+      // save the high score
+      this.assignHighestScore();
+    },
+    // ends a current game without displaying Game Over,
+    // saving the score if it would be a new high score
+    resetGame() {
+      this.gameInProgress = false;
+      // save the high score
+      this.assignHighestScore();
+      this.beginGame();
+    },
+    assignHighestScore() {
+      if (this.hasHighScore) {
+        if (this.score > this.highScore) {
+          this.highScore = this.score;
+        }
+      } else {
+        this.highScore = this.score;
+        this.hasHighScore = true;
+      }
+    },
+    // Determines if the selected action was the correct choice and acts accordingly
+    selectColor(color) {
+      // only respond if a game is in progress and it is the player's turn
+      if (this.gameInProgress && this.isPlayerTurn) {
+        this.flashColor(color);
+        if (this.sequence[this.selectIndex] === color) {
           // correct guess
           this.selectIndex++;
-          if (this.selectIndex == this.sequence.length)
-          {
+          // score is the longest completed sequence,
+          // which is always 1 item longer than the last completed sequence
+          if (this.selectIndex == this.sequence.length) {
             this.score++;
-            // previous sequence ended; new one must be generated
-            setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);          }
-        }
-        else {
-          lost = true;
-          console.log("wrong guess");
-        }
-      },
-      flashGreen() {
-        this.greenFlash = true;
-        setTimeout(this.unflashGreen, this.CLUE_FLASH_LENGTH);
-      },
-      resetFlashGreen() {
-        this.greenFlash = true;
-        setTimeout(this.unflashGreen, this.QUICK_FLASH_LENGTH);
-      },
-      unflashGreen() {
-        this.greenFlash = false;
-      },
-      selectRed()
-      {
-        this.resetFlashRed();
-        if (this.sequence[this.selectIndex] === "red"){
-          // correct guess
-          this.selectIndex++;
-          if (this.selectIndex == this.sequence.length)
-          {
-            this.score++;
-            // previous sequence ended; new one must be generated
-            setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);          }
-        }
-        else {
-          lost = true;
-          console.log("wrong guess");
-        }
-      },
-      flashRed() {
-        this.redFlash = true;
-        setTimeout(this.unflashRed, this.CLUE_FLASH_LENGTH);
-      },
-      resetFlashRed() {
-         this.redFlash = true;
-         setTimeout(this.unflashRed, this.QUICK_FLASH_LENGTH);
-       },
-      unflashRed() {
-        this.redFlash = false;
-      },
-      selectYellow()
-      {
-        this.resetFlashYellow();
-        if (this.sequence[this.selectIndex] === "yellow"){
-          // correct guess
-          this.selectIndex++;
-          if (this.selectIndex == this.sequence.length)
-          {
-            this.score++;
-            // previous sequence ended; new one must be generated
-            setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);          }
-        }
-        else {
-          lost = true;
-          console.log("wrong guess");
-        }
-      },
-      flashYellow() {
-        this.yellowFlash = true;
-        setTimeout(this.unflashYellow, this.CLUE_FLASH_LENGTH);
-      },
-      resetFlashYellow() {
-        this.yellowFlash = true;
-        setTimeout(this.unflashYellow, this.QUICK_FLASH_LENGTH);
-      },
-      unflashYellow() {
-        this.yellowFlash = false;
-      },
-      selectBlue()
-      {
-        this.resetFlashBlue();
-        if (this.sequence[this.selectIndex] === "blue"){
-          // correct guess
-          this.selectIndex++;
-          if (this.selectIndex == this.sequence.length)
-          {
-            this.score++;
+            // deactivate player turn until next sequence is displayed
+            this.isPlayerTurn = false;
             // previous sequence ended; new one must be generated
             setTimeout(this.nextSequence, this.CLUE_FLASH_LENGTH * 2);
           }
+        } else {
+          // incorrect guess
+          this.loseGame();
         }
-        else {
-          lost = true;
-          console.log("wrong guess");
+      } else {
+        this.isAnnouncing = true;
+        if (this.gameInProgress) {
+          // sequence is flashing
+          this.message = "Wait until the sequence has finished flashing before guessing";
+        } else {
+          this.flashColor(color);
+          this.message = "Click 'Begin' to begin a new game";
         }
-      },
-      flashBlue() {
-        this.blueFlash = true;
-        setTimeout(this.unflashBlue, this.CLUE_FLASH_LENGTH);
-      },
-      resetFlashBlue() {
-        this.blueFlash = true;
-        setTimeout(this.unflashBlue, this.QUICK_FLASH_LENGTH);
-      },
-      unflashBlue() {
-        this.blueFlash = false;
-      },
-      endGame() {
-        this.startGame = false;
-      },
-      nextSequence() {
-        this.selectIndex = 0;
-        var newColor = Math.floor((Math.random() * 4) + 1);
-        if (newColor === 1)
-        this.sequence.push('green');
-        else if (newColor === 2){
-          this.sequence.push('red');
-        }
-        else if (newColor === 3){
-          this.sequence.push('yellow');
-        }
-        else {
-          this.sequence.push('blue');
-        }
-        console.log(this.sequence);
-        this.nextInSequence(0);
-      },
-      // recursive function
-      nextInSequence(i)
-      {
-        if (i < this.sequence.length)
-        {
-          // flash color and trigger the next color
-          if (this.sequence[i] === 'green'){
-            this.flashGreen();
-          }
-          else if (this.sequence[i] === 'red'){
-            this.flashRed();
-          }
-          else if (this.sequence[i] === 'yellow'){
-            this.flashYellow();
-          }
-          else {
-            this.flashBlue();
-          }
-          // recursive call
-          setTimeout(this.nextInSequence, this.CLUE_FLASH_LENGTH * 2, i+1);
-        }
-
       }
-      /*
-    addItem() {
-      this.todos.push({text: this.message, completed:false});
-      this.message = '';
     },
-    deleteItem(item) {
-      var index = this.todos.indexOf(item);
-      if (index > -1)
-      this.todos.splice(index,1);
+    // Flashes the provided color
+    flashColor(color) {
+      if (color === "green") {
+        this.resetFlashGreen();
+      } else if (color === "red") {
+        this.resetFlashRed();
+      } else if (color === "yellow") {
+        this.resetFlashYellow();
+      } else {
+        // blue
+        this.resetFlashBlue();
+      }
     },
-    showAll() {
-      this.show = 'all';
+    // Appends a random color (1-4) to the sequence,
+    // then calls the function to replay the new sequence
+    nextSequence() {
+      this.selectIndex = 0;
+      var newColor = Math.floor((Math.random() * 4) + 1);
+      if (newColor === 1)
+        this.sequence.push('green');
+      else if (newColor === 2) {
+        this.sequence.push('red');
+      } else if (newColor === 3) {
+        this.sequence.push('yellow');
+      } else {
+        this.sequence.push('blue');
+      }
+      this.flashNextInSequence(0);
     },
-    showActive() {
-      this.show = 'active';
+    // recursive function that replays the new sequence with a delay between each flash
+    flashNextInSequence(i) {
+      if (i < this.sequence.length) {
+        // flash color and trigger the next color
+        if (this.sequence[i] === 'green') {
+          this.flashGreen();
+        } else if (this.sequence[i] === 'red') {
+          this.flashRed();
+        } else if (this.sequence[i] === 'yellow') {
+          this.flashYellow();
+        } else {
+          this.flashBlue();
+        }
+        // recursive call
+        setTimeout(this.flashNextInSequence, this.CLUE_FLASH_LENGTH * 2, i + 1);
+      } else {
+        // sequence has finished flashing; it is the player's turn
+        this.isPlayerTurn = true;
+        // Turn off any announcements that may have appeared during the sequence
+        this.isAnnouncing = false;
+        this.message = "";
+      }
     },
-    showCompleted() {
-      this.show = 'completed';
+    /* Green */
+    selectGreen() {
+      this.selectColor("green");
     },
-    deleteCompleted() {
-      this.todos = this.todos.filter(item => {
-        return !item.completed;
-      });
+    flashGreen() {
+      this.greenFlash = true;
+      setTimeout(this.unflashGreen, this.CLUE_FLASH_LENGTH);
     },
-    dragItem(item) {
-      this.drag = item;
+    resetFlashGreen() {
+      this.greenFlash = true;
+      setTimeout(this.unflashGreen, this.QUICK_FLASH_LENGTH);
     },
-    dropItem(item) {
-      const indexItem = this.todos.indexOf(this.drag);
-      const indexTarget = this.todos.indexOf(item);
-      this.todos.splice(indexItem,1);
-      this.todos.splice(indexTarget,0,this.drag);
-    },*/
+    unflashGreen() {
+      this.greenFlash = false;
+    },
+    /* Red */
+    selectRed() {
+      this.selectColor("red");
+    },
+    flashRed() {
+      this.redFlash = true;
+      setTimeout(this.unflashRed, this.CLUE_FLASH_LENGTH);
+    },
+    resetFlashRed() {
+      this.redFlash = true;
+      setTimeout(this.unflashRed, this.QUICK_FLASH_LENGTH);
+    },
+    unflashRed() {
+      this.redFlash = false;
+    },
+    /* Yellow */
+    selectYellow() {
+      this.selectColor("yellow");
+    },
+    flashYellow() {
+      this.yellowFlash = true;
+      setTimeout(this.unflashYellow, this.CLUE_FLASH_LENGTH);
+    },
+    resetFlashYellow() {
+      this.yellowFlash = true;
+      setTimeout(this.unflashYellow, this.QUICK_FLASH_LENGTH);
+    },
+    unflashYellow() {
+      this.yellowFlash = false;
+    },
+    /* Blue */
+    selectBlue() {
+      this.selectColor("blue");
+    },
+    flashBlue() {
+      this.blueFlash = true;
+      setTimeout(this.unflashBlue, this.CLUE_FLASH_LENGTH);
+    },
+    resetFlashBlue() {
+      this.blueFlash = true;
+      setTimeout(this.unflashBlue, this.QUICK_FLASH_LENGTH);
+    },
+    unflashBlue() {
+      this.blueFlash = false;
+    },
   }
 });
