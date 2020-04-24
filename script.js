@@ -1,3 +1,11 @@
+var incorrectAudio = new Audio('./audio/incorrect.mp3');
+var neutralAudio = new Audio('./audio/neutral.mp3');
+var resetAudio = new Audio('./audio/resetAudioShort.mp3');
+var green = new Audio('./audio/green.mp3');
+var red = new Audio('./audio/red.mp3');
+var blue = new Audio('./audio/blue.mp3');
+var yellow = new Audio('./audio/yellow.mp3');
+
 var simon = new Vue({
   el: '#simon',
   data: {
@@ -63,6 +71,14 @@ var simon = new Vue({
     /* Game Management */
     // Starts a new game
     beginGame() {
+      // Halts any playing audio
+      incorrectAudio.pause();
+      incorrectAudio.currentTime = 0;
+      neutralAudio.pause();
+      neutralAudio.currentTime = 0;
+      resetAudio.pause();
+      resetAudio.currentTime = 0;
+      resetAudio.play();
       // initialize
       this.score = 0;
       this.selectIndex = 0;
@@ -78,7 +94,7 @@ var simon = new Vue({
       // start
       this.gameInProgress = true;
       // generate the next sequence
-      setTimeout(this.nextSequence, 700);
+      setTimeout(this.nextSequence, 800);
     },
     // ends current game and displays Game over,
     // saving the score if it is a new high score
@@ -109,11 +125,19 @@ var simon = new Vue({
     },
     // Determines if the selected action was the correct choice and acts accordingly
     selectColor(color) {
+      // Halt any playing sounds
+      incorrectAudio.pause();
+      incorrectAudio.currentTime = 0;
+      neutralAudio.pause();
+      neutralAudio.currentTime = 0;
+      resetAudio.pause();
+      resetAudio.currentTime = 0;
       // only respond if a game is in progress and it is the player's turn
       if (this.gameInProgress && this.isPlayerTurn) {
         this.flashColor(color);
         if (this.sequence[this.selectIndex] === color) {
           // correct guess
+          this.playColor(color);
           this.selectIndex++;
           // score is the longest completed sequence,
           // which is always 1 item longer than the last completed sequence
@@ -126,6 +150,7 @@ var simon = new Vue({
           }
         } else {
           // incorrect guess
+          incorrectAudio.play();
           this.loseGame();
         }
       } else {
@@ -135,6 +160,7 @@ var simon = new Vue({
           this.message = "Wait until the sequence has finished flashing before guessing";
         } else {
           this.flashColor(color);
+          neutralAudio.play();
           this.message = "Click 'Begin' to begin a new game";
         }
       }
@@ -152,9 +178,23 @@ var simon = new Vue({
         this.resetFlashBlue();
       }
     },
+    // Plays the audio of the given color
+    playColor(color) {
+      if (color === 'green') {
+        green.play();
+      } else if (color === 'red') {
+        red.play();
+      } else if (color === 'yellow') {
+        yellow.play();
+      } else {
+        blue.play();
+      }
+    },
     // Appends a random color (1-4) to the sequence,
     // then calls the function to replay the new sequence
     nextSequence() {
+      resetAudio.pause();
+      resetAudio.currentTime = 0;
       this.selectIndex = 0;
       var newColor = Math.floor((Math.random() * 4) + 1);
       if (newColor === 1)
@@ -172,13 +212,18 @@ var simon = new Vue({
     flashNextInSequence(i) {
       if (i < this.sequence.length) {
         // flash color and trigger the next color
+
         if (this.sequence[i] === 'green') {
+          this.playColor('green');
           this.flashGreen();
         } else if (this.sequence[i] === 'red') {
+          this.playColor('red');
           this.flashRed();
         } else if (this.sequence[i] === 'yellow') {
+          this.playColor('yellow');
           this.flashYellow();
         } else {
+          this.playColor('blue');
           this.flashBlue();
         }
         // recursive call
